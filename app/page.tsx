@@ -1,11 +1,12 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { getColor } from "./actions/getColors";
+import { useSearchParams } from "next/navigation";
 
 export default function Home() {
+  const searchParams = useSearchParams();
   const spanRef = React.useRef<HTMLParagraphElement>(null);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
     // gaurd clause
     if (!spanRef.current) return;
 
@@ -17,6 +18,13 @@ export default function Home() {
     console.log(serverColor);
     spanRef.current.style.color = color;
   };
+  // Use useEffect to apply the color from URL when the component mounts
+  useEffect(() => {
+    const color = searchParams.get("color");
+    if (color && spanRef.current) {
+      spanRef.current.style.color = color;
+    }
+  }, [searchParams]);
   return (
     <div
       className="flex justify-center items-center h-screen bg-cover bg-center bg-no-repeat"
@@ -27,6 +35,7 @@ export default function Home() {
     >
       <form
         onSubmit={handleSubmit}
+        method="GET"
         className="border border-solid  border-white  bg-black bg-opacity-75 p-8 md:p-16 lg:p-24 rounded-lg shadow-2xl max-w-md mx-auto"
       >
         <p className="text-lg md:text-2xl lg:text-3xl font-bold mb-4 text-center">
